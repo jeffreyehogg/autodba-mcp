@@ -1,0 +1,76 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "autodba-mcp"
+version = "0.1.0"
+description = "Zero-database-connection static SQL analysis, query optimization, and execution plan diagnostics MCP server."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Jeff Hogg" }
+]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "sql",
+    "tsql",
+    "postgres",
+    "mysql",
+    "sqlglot",
+    "database",
+    "query-optimization",
+    "performance",
+    "dba"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+dependencies = [
+    "mcp>=1.2.0",
+    "sqlglot>=25.0.0",
+    "pydantic>=2.0.0",
+    "defusedxml>=0.7.1"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.8.0"
+]
+
+[project.scripts]
+autodba-mcp = "autodba_mcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/jeffreyehogg/autodba-mcp"
+Repository = "https://github.com/jeffreyehogg/autodba-mcp"
+Issues = "https://github.com/jeffreyehogg/autodba-mcp/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["autodba_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
