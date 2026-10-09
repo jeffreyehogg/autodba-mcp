@@ -350,8 +350,43 @@ def list_supported_rules() -> str:
     return "\n".join(md)
 
 
+@mcp.resource("rules://catalog")
+def get_rules_catalog() -> str:
+    """Expose the diagnostic rules catalog as an MCP Markdown resource."""
+    return list_supported_rules()
+
+
+@mcp.prompt()
+def optimize_query_prompt(sql: str, dialect: str = "tsql") -> str:
+    """Guided prompt template for reviewing and optimizing a database query."""
+    return (
+        f"Please analyze and optimize the following {dialect.upper()} query using AutoDBA tools:\n\n"
+        f"```sql\n{sql}\n```\n\n"
+        "1. Run `analyze_query` to check for non-SARGable column functions, Cartesian joins, and overfetching.\n"
+        "2. Run `optimize_query` to rewrite the SQL and synthesize zero-downtime index migration DDL.\n"
+        "3. Provide a summary of estimated workload reduction and production deployment steps."
+    )
+
+
 def main():
     """CLI entrypoint for stdio MCP server."""
+    import sys
+
+    from autodba_mcp import __version__
+
+    if len(sys.argv) > 1:
+        arg = sys.argv[1].lower()
+        if arg in ("--version", "-v", "version"):
+            print(f"autodba-mcp {__version__}")
+            return
+        if arg in ("--help", "-h", "help"):
+            print("AutoDBA MCP Server")
+            print("Zero-database-connection static SQL analysis and execution plan diagnostics.")
+            print("\nUsage:")
+            print("  autodba-mcp               Run stdio MCP server (Claude Desktop, Cursor, Antigravity)")
+            print("  autodba-mcp --version     Print package version")
+            print("  autodba-mcp --help        Print this help message")
+            return
     mcp.run()
 
 

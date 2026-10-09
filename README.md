@@ -33,6 +33,13 @@ AutoDBA MCP allows AI coding assistants (Claude Desktop, Cursor, Antigravity, Wi
 | `explain_execution_plan` | `plan_content: str`, `dialect: str = "tsql"` | Parses `.sqlplan` XML or EXPLAIN JSON to isolate bottleneck operators and extract missing index recommendations. |
 | `list_supported_rules` | *None* | Returns the catalog of built-in AST diagnostic and execution plan rules. |
 
+### 📚 MCP Resources & Prompts
+
+| Type | URI / Name | Description |
+| :--- | :--- | :--- |
+| **Resource** | `rules://catalog` | Exposes the complete diagnostic rules catalog and remediation strategies as Markdown. |
+| **Prompt** | `optimize_query_prompt` | Pre-configured assistant prompt guiding a step-by-step DBA review and optimization workflow. |
+
 ---
 
 ## 🚀 Quickstart & Configuration

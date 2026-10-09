@@ -8,9 +8,12 @@ from autodba_mcp.engine.data.presets import PRESETS
 from autodba_mcp.server import (
     analyze_query,
     explain_execution_plan,
+    get_rules_catalog,
     list_supported_rules,
+    main,
     mcp,
     optimize_query,
+    optimize_query_prompt,
 )
 
 
@@ -77,3 +80,33 @@ def test_tool_list_supported_rules():
     assert "CURSOR_LOOP" in rules_md
     assert "PLAN_TABLE_SCAN" in rules_md
     assert "PLAN_SORT_SPILL" in rules_md
+
+
+def test_resource_rules_catalog():
+    """Verify rules://catalog resource returns complete catalog Markdown."""
+    res_md = get_rules_catalog()
+    assert isinstance(res_md, str)
+    assert "# AutoDBA Diagnostic Rules Catalog" in res_md
+
+
+def test_prompt_optimize_query():
+    """Verify optimize_query_prompt returns structured guidance prompt."""
+    prompt = optimize_query_prompt("SELECT * FROM dbo.Leads", dialect="tsql")
+    assert isinstance(prompt, str)
+    assert "analyze_query" in prompt
+    assert "optimize_query" in prompt
+    assert "TSQL" in prompt
+
+
+def test_cli_version_and_help(monkeypatch, capsys):
+    """Verify CLI prints version and help info without hanging."""
+    monkeypatch.setattr("sys.argv", ["autodba-mcp", "--version"])
+    main()
+    captured = capsys.readouterr()
+    assert "autodba-mcp 0.1.0" in captured.out
+
+    monkeypatch.setattr("sys.argv", ["autodba-mcp", "--help"])
+    main()
+    captured = capsys.readouterr()
+    assert "AutoDBA MCP Server" in captured.out
+    assert "Usage:" in captured.out
