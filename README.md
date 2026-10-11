@@ -6,21 +6,37 @@
 [![MCP Protocol](https://img.shields.io/badge/protocol-MCP%202025-green.svg)](https://modelcontextprotocol.io/)
 [![CI](https://github.com/jeffreyehogg/autodba-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/jeffreyehogg/autodba-mcp/actions)
 
-> **Zero-database-connection static SQL analysis, automated query optimization, and execution plan diagnostics.**  
+> **Fix slow SQL queries, build smart database indexes, and find performance bottlenecks—without ever connecting to your database.**  
 > Powered by the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) and [`sqlglot`](https://github.com/tobymao/sqlglot).
 
-AutoDBA MCP allows AI coding assistants (Claude Desktop, Cursor, Antigravity, Windsurf) to analyze SQL queries, eliminate performance anti-patterns, synthesize zero-downtime index migration DDL, and parse execution plans—**without requiring database credentials, network access, or exposing proprietary data.**
+AutoDBA is an open-source MCP server that gives your AI coding assistant (Claude Desktop, Cursor, Antigravity, Windsurf) the expertise of a senior Database Administrator.
+
+Unlike standard database tools that ask for your production database password, **AutoDBA is 100% private and runs offline**. It reads the SQL query text directly, meaning your real customer data is never accessed, sent across the internet, or exposed.
 
 ---
 
-## ⚡ Key Capabilities
+## 💡 Why AutoDBA? (What Makes It Different)
 
-- **Zero Database Connection Required**: Runs 100% offline via AST parsing (`sqlglot`). No production DB credentials or connection strings needed.
-- **Static Anti-Pattern Detection**: Identifies non-SARGable column functions, Cartesian joins, cursor loops, `SELECT *`, leading wildcard `LIKE`, and unsafe locks (`NOLOCK`).
-- **Deterministic AST Rewriter**: Automatically refactors anti-patterns into high-performance SQL (e.g., converting `YEAR(col) = 2026` into half-open range bounds `col >= '2026-01-01' AND col < '2027-01-01'`).
-- **Zero-Downtime Index Synthesis**: Generates non-blocking DDL (`WITH (ONLINE = ON)` for SQL Server, `CREATE INDEX CONCURRENTLY` for PostgreSQL, `ALGORITHM=INPLACE, LOCK=NONE` for MySQL) based on query predicates and missing index requests.
-- **Execution Plan Diagnostics**: Parses SQL Server `.sqlplan` ShowPlan XML, PostgreSQL `EXPLAIN (FORMAT JSON)`, and MySQL `EXPLAIN FORMAT=JSON` to pinpoint table scans, sort spills, and bottleneck operators.
-- **Dialect Support**: Native optimization rules for **Microsoft SQL Server (T-SQL)**, **PostgreSQL**, and **MySQL**.
+If you have ever used AI or ChatGPT to help write or fix SQL, you have probably run into these common frustrations:
+
+| What Usually Happens | How AutoDBA Fixes It | Why It Matters to You |
+| :--- | :--- | :--- |
+| 🔑 **Asks for DB Passwords**<br>Most database tools require a live connection string (`POSTGRES_URL`). | 🔒 **Zero Database Connection**<br>Runs 100% offline. AutoDBA only looks at the query syntax, never your database. | **Completely Safe at Work**.<br>No security reviews, no risk of leaking company or user data. |
+| 🤖 **AI Hallucinations**<br>Standard AI models frequently invent columns or change what your query returns. | ⚙️ **Accurate Syntax Rewrites**<br>Uses mathematical AST parsing (`sqlglot`) to refactor queries with guaranteed accuracy. | **Zero Logic Bugs**.<br>Your query returns the exact same results, just much faster. |
+| 🐢 **Slow Full-Table Scans**<br>Writing `WHERE YEAR(date) = 2026` forces the DB to check millions of rows one by one. | ⚡ **Turns Scans into Index Seeks**<br>Automatically rewrites filters into date ranges (`>= '2026-01-01' AND < '2027-01-01'`). | **Massive Speedups**.<br>Turns queries that take 10+ seconds into instant responses (< 20ms). |
+| 💥 **Table Locks in Production**<br>Standard `CREATE INDEX` commands can lock tables and freeze your live app. | 🛡️ **Zero-Downtime Indexes**<br>Generates safe background scripts (`ONLINE = ON` or `CONCURRENTLY`). | **Safe for Live Apps**.<br>Deploy new indexes without freezing users or taking down the website. |
+| 📦 **Painful Installation**<br>Setting up database drivers, opening firewall ports, and configuring VPCs. | 🚀 **One-Command Setup**<br>Runs instantly anywhere with `uvx autodba-mcp`. | **Zero Setup**.<br>Ready to use inside Claude or Cursor in under 30 seconds. |
+
+---
+
+## ⚡ What AutoDBA Does For You
+
+- **Private & Safe (Zero DB Connection Required)**: Analyzes queries completely offline. You never have to share database passwords or hostnames.
+- **Finds Hidden Slowdowns**: Catches common beginner and enterprise mistakes, like index-blocking functions on columns, missing table joins, `SELECT *`, and unsafe query locks.
+- **Rewrites Queries for Top Speed**: Refactors inefficient SQL into high-performance patterns so your database engine can immediately use existing indexes.
+- **Designs Background Indexes**: Synthesizes ready-to-run index creation scripts with safety flags (`ONLINE = ON` for SQL Server, `CREATE INDEX CONCURRENTLY` for PostgreSQL, `ALGORITHM=INPLACE` for MySQL).
+- **Reads Execution Plans**: If you have a query execution plan (`.sqlplan` or `EXPLAIN JSON`), AutoDBA reads it to tell you in plain English where the bottleneck is.
+- **Supports Major Databases**: Built-in rules for **Microsoft SQL Server (T-SQL)**, **PostgreSQL**, and **MySQL**.
 
 ---
 
